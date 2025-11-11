@@ -6,6 +6,7 @@ const AppContext = createContext<AppContextType | undefined>(undefined);
 
 const STORAGE_KEY = 'family_task_game';
 const GAMES_STORAGE_KEY = 'tappy_games_store';
+const AUTH_STORAGE_KEY = 'tappy_auth_state';
 const SUPER_ADMIN_PASSWORD = 'tappyadmin123';
 
 export function AppProvider({ children }: { children: React.ReactNode }) {
@@ -26,6 +27,18 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     if (gamesStored) {
       setAvailableGames(JSON.parse(gamesStored));
     }
+
+    const authStored = localStorage.getItem(AUTH_STORAGE_KEY);
+    if (authStored) {
+      const authData = JSON.parse(authStored);
+      setIsParent(authData.isParent || false);
+      setIsSuperAdmin(authData.isSuperAdmin || false);
+      if (authData.currentMemberId && stored) {
+        const familyData = JSON.parse(stored);
+        const member = familyData.members.find((m: Member) => m.id === authData.currentMemberId);
+        if (member) setCurrentMember(member);
+      }
+    }
   }, []);
 
   useEffect(() => {
@@ -37,6 +50,15 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     localStorage.setItem(GAMES_STORAGE_KEY, JSON.stringify(availableGames));
   }, [availableGames]);
+
+  useEffect(() => {
+    const authState = {
+      isParent,
+      isSuperAdmin,
+      currentMemberId: currentMember?.id || null,
+    };
+    localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(authState));
+  }, [isParent, isSuperAdmin, currentMember]);
 
   const createFamily = (email: string) => {
     const newFamily: Family = {
@@ -192,6 +214,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setCurrentMember(null);
     setIsParent(false);
     setIsSuperAdmin(false);
+    localStorage.removeItem(AUTH_STORAGE_KEY);
   };
 
   return (
