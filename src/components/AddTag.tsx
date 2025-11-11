@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
-import { Nfc } from 'lucide-react';
+import { Nfc, QrCode } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { Tag } from '../types';
 
@@ -8,14 +8,38 @@ export function AddTag() {
   const { addTag } = useApp();
   const [tagName, setTagName] = useState('');
   const [generatedTag, setGeneratedTag] = useState<Tag | null>(null);
-  const [step, setStep] = useState<'name' | 'write' | 'done'>('name');
+  const [step, setStep] = useState<'choose' | 'name' | 'write' | 'done'>('choose');
+  const [tagType, setTagType] = useState<'nfc' | 'qr'>('nfc');
   const [nfcStatus, setNfcStatus] = useState<'idle' | 'writing' | 'success' | 'error'>('idle');
   const [nfcError, setNfcError] = useState('');
 
+  const handleChooseType = (type: 'nfc' | 'qr') => {
+    setTagType(type);
+    setStep('name');
+  };
+
   const handleNext = () => {
     if (tagName.trim()) {
-      setStep('write');
+      if (tagType === 'qr') {
+        handleGenerateQR();
+      } else {
+        setStep('write');
+      }
     }
+  };
+
+  const handleGenerateQR = () => {
+    const tagID = `TAG_${Date.now()}`;
+    const newTag: Tag = {
+      id: crypto.randomUUID(),
+      uid: tagID,
+      qrCode: tagID,
+      name: tagName.trim(),
+    };
+
+    addTag(newTag);
+    setGeneratedTag(newTag);
+    setStep('done');
   };
 
   const handleWriteNFC = async () => {
@@ -62,7 +86,7 @@ export function AddTag() {
   const handleStartOver = () => {
     setTagName('');
     setGeneratedTag(null);
-    setStep('name');
+    setStep('choose');
     setNfcStatus('idle');
     setNfcError('');
   };
@@ -72,31 +96,46 @@ export function AddTag() {
       <div className="bg-white rounded-3xl shadow-xl p-8">
         <div className="text-center mb-8">
           <div className="text-5xl mb-3">🏷️</div>
-          <h2 className="text-3xl font-bold text-gray-800 mb-2">Create NFC Tag</h2>
-          <p className="text-gray-600">Simple 3-step process</p>
+          <h2 className="text-3xl font-bold text-gray-800 mb-2">Create Tag</h2>
+          <p className="text-gray-600">Simple step-by-step process</p>
         </div>
 
-        <div className="flex justify-center mb-8">
-          <div className="flex items-center gap-2">
-            <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold ${
-              step === 'name' ? 'bg-blue-500 text-white' : 'bg-green-500 text-white'
-            }`}>1</div>
-            <div className="w-12 h-1 bg-gray-300"></div>
-            <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold ${
-              step === 'name' ? 'bg-gray-300 text-gray-600' : step === 'write' ? 'bg-blue-500 text-white' : 'bg-green-500 text-white'
-            }`}>2</div>
-            <div className="w-12 h-1 bg-gray-300"></div>
-            <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold ${
-              step === 'done' ? 'bg-green-500 text-white' : 'bg-gray-300 text-gray-600'
-            }`}>3</div>
+        {step === 'choose' && (
+          <div className="space-y-6">
+            <h3 className="text-xl font-bold text-gray-800 text-center mb-6">
+              Choose Tag Type
+            </h3>
+            <div className="grid grid-cols-2 gap-4">
+              <button
+                onClick={() => handleChooseType('nfc')}
+                className="bg-purple-50 rounded-2xl p-8 border-2 border-purple-200 hover:border-purple-400 transition-all text-center group"
+              >
+                <Nfc className="w-16 h-16 text-purple-600 mx-auto mb-4 group-hover:scale-110 transition-transform" />
+                <h4 className="text-lg font-bold text-gray-800 mb-2">NFC Sticker</h4>
+                <p className="text-sm text-gray-600">
+                  Write to a physical NFC sticker
+                </p>
+              </button>
+
+              <button
+                onClick={() => handleChooseType('qr')}
+                className="bg-green-50 rounded-2xl p-8 border-2 border-green-200 hover:border-green-400 transition-all text-center group"
+              >
+                <QrCode className="w-16 h-16 text-green-600 mx-auto mb-4 group-hover:scale-110 transition-transform" />
+                <h4 className="text-lg font-bold text-gray-800 mb-2">QR Code</h4>
+                <p className="text-sm text-gray-600">
+                  Generate a printable QR code
+                </p>
+              </button>
+            </div>
           </div>
-        </div>
+        )}
 
         {step === 'name' && (
           <div className="space-y-6">
-            <div className="bg-blue-50 rounded-2xl p-8 border-2 border-blue-200">
+            <div className={`${tagType === 'nfc' ? 'bg-purple-50 border-purple-200' : 'bg-green-50 border-green-200'} rounded-2xl p-8 border-2`}>
               <h3 className="text-xl font-bold text-gray-800 mb-4 text-center">
-                Step 1: Name Your Tag
+                Name Your Tag
               </h3>
               <p className="text-sm text-gray-600 mb-6 text-center">
                 Give this tag a simple name (like "Kitchen" or "Front Door")
@@ -105,7 +144,9 @@ export function AddTag() {
                 type="text"
                 value={tagName}
                 onChange={(e) => setTagName(e.target.value)}
-                className="w-full px-6 py-4 border-2 border-gray-300 rounded-xl focus:border-blue-500 focus:outline-none text-lg text-center font-semibold"
+                className={`w-full px-6 py-4 border-2 border-gray-300 rounded-xl focus:outline-none text-lg text-center font-semibold ${
+                  tagType === 'nfc' ? 'focus:border-purple-500' : 'focus:border-green-500'
+                }`}
                 placeholder="e.g., Kitchen"
                 autoFocus
               />
@@ -115,11 +156,19 @@ export function AddTag() {
               disabled={!tagName.trim()}
               className={`w-full py-4 rounded-xl font-bold text-lg transition-all ${
                 tagName.trim()
-                  ? 'bg-blue-500 text-white hover:bg-blue-600'
+                  ? tagType === 'nfc'
+                    ? 'bg-purple-500 text-white hover:bg-purple-600'
+                    : 'bg-green-500 text-white hover:bg-green-600'
                   : 'bg-gray-300 text-gray-500 cursor-not-allowed'
               }`}
             >
-              Next: Write to NFC Tag
+              {tagType === 'nfc' ? 'Next: Write to NFC' : 'Generate QR Code'}
+            </button>
+            <button
+              onClick={() => setStep('choose')}
+              className="w-full py-3 rounded-xl font-semibold text-gray-600 hover:text-gray-800 transition-all"
+            >
+              ← Back
             </button>
           </div>
         )}
@@ -131,7 +180,7 @@ export function AddTag() {
                 nfcStatus === 'writing' ? 'animate-pulse' : ''
               }`} />
               <h3 className="text-xl font-bold text-gray-800 mb-2">
-                Step 2: Write to NFC Sticker
+                Write to NFC Sticker
               </h3>
               <p className="text-gray-600 mb-6">
                 Get a blank NFC sticker ready
@@ -184,7 +233,7 @@ export function AddTag() {
             <div className="bg-green-50 rounded-2xl p-8 border-2 border-green-200 text-center">
               <div className="text-6xl mb-4">✓</div>
               <h3 className="text-2xl font-bold text-green-600 mb-2">
-                NFC Tag Created!
+                Tag Created!
               </h3>
               <p className="text-gray-700 mb-6">
                 Your tag <strong>"{generatedTag.name}"</strong> is ready to use
@@ -192,12 +241,15 @@ export function AddTag() {
 
               <div className="bg-white rounded-xl p-6 mb-6">
                 <div className="flex justify-center mb-4">
-                  <div className="inline-block p-4 bg-white rounded-xl shadow-lg border-4 border-gray-200">
-                    <QRCodeSVG value={generatedTag.qrCode} size={200} />
+                  <div className="inline-block text-center">
+                    <div className="p-4 bg-white rounded-xl shadow-lg border-4 border-gray-200 mb-3">
+                      <QRCodeSVG value={generatedTag.qrCode} size={200} />
+                    </div>
+                    <p className="text-2xl font-bold text-gray-800">{generatedTag.name}</p>
                   </div>
                 </div>
                 <p className="text-sm text-gray-600 mb-3">
-                  QR Code (backup option)
+                  {tagType === 'qr' ? 'QR Code' : 'QR Code (backup option)'}
                 </p>
                 <button
                   onClick={() => window.print()}
@@ -212,7 +264,7 @@ export function AddTag() {
                   <strong>What's next?</strong>
                 </p>
                 <ul className="list-disc list-inside space-y-1 text-sm text-blue-800 mt-2">
-                  <li>Stick the NFC tag at the location ({generatedTag.name})</li>
+                  <li>{tagType === 'qr' ? 'Print and place' : 'Stick'} the tag at the location ({generatedTag.name})</li>
                   <li>Create a mission that uses this tag</li>
                   <li>Kids can scan the tag to complete the mission</li>
                 </ul>
