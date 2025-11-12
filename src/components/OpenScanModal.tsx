@@ -50,7 +50,7 @@ export function OpenScanModal({ onClose }: OpenScanModalProps) {
     );
 
     if (availableMissions.length === 0) {
-      const message = `Hi ${currentMember.nickname}! You found the "${tag.name || 'tag'}", but there's no mission here for you right now.`;
+      const message = `Hi ${currentMember.nickname}! You found the ${tag.name}, but there's no mission here for you right now.`;
       setGenieMessage(message);
       setShowGenieMessage(true);
 
@@ -61,7 +61,28 @@ export function OpenScanModal({ onClose }: OpenScanModalProps) {
       setTimeout(() => {
         setShowGenieMessage(false);
         onClose();
-      }, 3000);
+      }, 3500);
+      return;
+    }
+
+    if (availableMissions.length > 1) {
+      const missionsList = availableMissions.map((m, i) => `${i + 1}. ${m.taskName}`).join('\n');
+      const message = `Hi ${currentMember.nickname}! You found the ${tag.name}! You have ${availableMissions.length} missions here:\n\n${missionsList}\n\nLet's start with the first one!`;
+      setGenieMessage(message);
+      setShowGenieMessage(true);
+
+      if (family.genieSettings?.voiceEnabled) {
+        const spokenMessage = `Hi ${currentMember.nickname}! You found the ${tag.name}! You have ${availableMissions.length} missions here. Let's start with the first one!`;
+        speakGenie(spokenMessage, family.genieSettings);
+      }
+
+      setTimeout(() => {
+        setShowGenieMessage(false);
+        const mission = availableMissions[0];
+        setFoundMission(mission);
+        setShowMissionComplete(true);
+        setError('');
+      }, 3500);
       return;
     }
 

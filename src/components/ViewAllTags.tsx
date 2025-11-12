@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { QRCodeSVG } from 'qrcode.react';
-import { QrCode, Printer } from 'lucide-react';
+import { QRCodeSVG, QRCodeCanvas } from 'qrcode.react';
+import { QrCode, Printer, Download } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { PrintQRCodes } from './PrintQRCodes';
+import { downloadQR } from '../utils/downloadQR';
 
 export function ViewAllTags() {
   const { family } = useApp();
@@ -58,15 +59,34 @@ export function ViewAllTags() {
 
               <div className="flex justify-center mb-4">
                 <div className="p-4 bg-white rounded-xl border-4 border-gray-300">
-                  <QRCodeSVG value={tag.qrCode} size={200} />
+                  <QRCodeSVG value={tag.uid} size={200} />
+                  <div className="hidden">
+                    <QRCodeCanvas
+                      id={`qr-canvas-${tag.id}`}
+                      value={tag.uid}
+                      size={512}
+                      level="H"
+                      includeMargin={true}
+                    />
+                  </div>
                 </div>
               </div>
 
-              <div className="text-center">
+              <div className="text-center mb-4">
                 <p className="text-xs text-gray-500 mb-1">Scan this QR code</p>
                 <p className="font-mono text-sm text-gray-700 bg-gray-100 px-3 py-1 rounded inline-block">
                   {tag.uid}
                 </p>
+              </div>
+
+              <div className="flex gap-2 justify-center">
+                <button
+                  onClick={() => downloadQR(`qr-canvas-${tag.id}`, tag.name || `tag-${tag.uid}`)}
+                  className="flex items-center gap-2 bg-green-500 text-white px-4 py-2 rounded-lg font-semibold hover:bg-green-600 transition-colors text-sm"
+                >
+                  <Download className="w-4 h-4" />
+                  Download PNG
+                </button>
               </div>
             </div>
           ))}

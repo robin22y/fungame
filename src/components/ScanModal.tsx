@@ -143,7 +143,7 @@ export function ScanModal({ missionId, onClose, onComplete }: ScanModalProps) {
                   </div>
                 )}
                 <p className="text-sm text-gray-500 mt-2">
-                  {tag.name ? `Look for: ${tag.name}` : `Expected tag: ${tag.uid}`}
+                  {tag.name ? `Look for: ${tag.name}` : 'Look for the tag at the mission location'}
                 </p>
               </div>
 

@@ -196,7 +196,7 @@ export function KidView() {
                   hasTag={!!mission.tagId}
                   hasPokerOffer={!!mission.pokerOffer}
                   pokerOffer={mission.pokerOffer}
-                  tagName={tag?.name || tag?.uid}
+                  tagName={tag?.name || 'Location'}
                   currentCheckpoint={mission.currentCheckpoint}
                   totalCheckpoints={mission.checkpoints?.length}
                   onClick={() => handleScanClick(mission.id)}

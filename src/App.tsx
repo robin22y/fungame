@@ -19,6 +19,7 @@ import { ThemeSelector } from './components/ThemeSelector';
 import { FamilyGamesPage } from './components/FamilyGamesPage';
 import { MemberManagement } from './components/MemberManagement';
 import { getAppThemeClasses, getCardThemeClasses, getTextThemeClasses } from './utils/themeManager';
+import { stopGenieSpeech } from './utils/speakGenie';
 
 type AppStep = 'login' | 'setup' | 'member-login' | 'main' | 'super-admin-login' | 'super-admin';
 type MainTab = 'dashboard' | 'missions' | 'add' | 'wallet' | 'badges' | 'camera' | 'theme';
@@ -105,6 +106,13 @@ function AppContent() {
         mood: 'funny' as const,
         currentGenieId: 'genie_default',
       };
+
+      const willBeMuted = !currentSettings.voiceEnabled;
+
+      if (willBeMuted) {
+        stopGenieSpeech();
+      }
+
       updateGenieSettings({
         ...currentSettings,
         voiceEnabled: !currentSettings.voiceEnabled,
