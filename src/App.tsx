@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AppProvider, useApp } from './context/AppContext';
 import { LoginPage } from './components/LoginPage';
 import { MemberSetup } from './components/MemberSetup';
@@ -18,6 +19,7 @@ import { OpenScanModal } from './components/OpenScanModal';
 import { ThemeSelector } from './components/ThemeSelector';
 import { FamilyGamesPage } from './components/FamilyGamesPage';
 import { MemberManagement } from './components/MemberManagement';
+import { MessageBoard } from './components/MessageBoard';
 import { getAppThemeClasses, getCardThemeClasses, getTextThemeClasses } from './utils/themeManager';
 import { stopGenieSpeech } from './utils/speakGenie';
 
@@ -30,10 +32,31 @@ function AppContent() {
   const [activeTab, setActiveTab] = useState<MainTab>('dashboard');
   const [addTab, setAddTab] = useState<'tag' | 'mission' | 'view' | 'members'>('tag');
   const [showOpenScan, setShowOpenScan] = useState(false);
+  const [autoScanTag, setAutoScanTag] = useState<string | null>(null);
 
   const themeClasses = getAppThemeClasses(appTheme);
   const cardClasses = getCardThemeClasses(appTheme);
   const textClasses = getTextThemeClasses(appTheme);
+
+  useEffect(() => {
+    const path = window.location.pathname;
+    const scanMatch = path.match(/\/(scan|message)\/([^/]+)/);
+
+    if (scanMatch && scanMatch[2]) {
+      const tagName = decodeURIComponent(scanMatch[2]);
+      setAutoScanTag(tagName);
+
+      if (currentMember && family) {
+        setShowOpenScan(true);
+      }
+    }
+  }, [currentMember, family]);
+
+  useEffect(() => {
+    if (autoScanTag && currentMember && family && !showOpenScan) {
+      setShowOpenScan(true);
+    }
+  }, [autoScanTag, currentMember, family]);
 
   if (step === 'super-admin-login') {
     return <SuperAdminLogin onSuccess={() => setStep('super-admin')} />;
@@ -213,7 +236,13 @@ function AppContent() {
       />
 
       {showOpenScan && !isParent && (
-        <OpenScanModal onClose={() => setShowOpenScan(false)} />
+        <OpenScanModal
+          onClose={() => {
+            setShowOpenScan(false);
+            setAutoScanTag(null);
+          }}
+          autoScanTag={autoScanTag}
+        />
       )}
     </div>
   );
@@ -221,9 +250,14 @@ function AppContent() {
 
 function App() {
   return (
-    <AppProvider>
-      <AppContent />
-    </AppProvider>
+    <BrowserRouter>
+      <AppProvider>
+        <Routes>
+          <Route path="/message/:tagName" element={<MessageBoard />} />
+          <Route path="*" element={<AppContent />} />
+        </Routes>
+      </AppProvider>
+    </BrowserRouter>
   );
 }
 

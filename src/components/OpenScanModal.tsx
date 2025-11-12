@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X, Scan, Camera, Nfc } from 'lucide-react';
 import { Scanner } from '@yudiel/react-qr-scanner';
 import { useApp } from '../context/AppContext';
@@ -8,9 +8,10 @@ import { speakGenie } from '../utils/speakGenie';
 
 interface OpenScanModalProps {
   onClose: () => void;
+  autoScanTag?: string | null;
 }
 
-export function OpenScanModal({ onClose }: OpenScanModalProps) {
+export function OpenScanModal({ onClose, autoScanTag }: OpenScanModalProps) {
   const { family, currentMember } = useApp();
   const [tagInput, setTagInput] = useState('');
   const [error, setError] = useState('');
@@ -24,13 +25,29 @@ export function OpenScanModal({ onClose }: OpenScanModalProps) {
 
   if (!family || !currentMember) return null;
 
-  const handleVerify = (scannedValue: string) => {
-    const normalizedValue = scannedValue.trim().toUpperCase();
+  useEffect(() => {
+    if (autoScanTag) {
+      handleVerify(autoScanTag);
+    }
+  }, [autoScanTag]);
 
-    const tag = family.tags.find(
-      t => t.uid.toUpperCase() === normalizedValue ||
-           t.qrCode.toUpperCase() === normalizedValue
+  const handleVerify = (scannedValue: string) => {
+    const normalizedValue = scannedValue.trim();
+
+    let tag = family.tags.find(
+      t => t.uid.toUpperCase() === normalizedValue.toUpperCase() ||
+           t.qrCode.toUpperCase() === normalizedValue.toUpperCase()
     );
+
+    if (!tag) {
+      const urlMatch = normalizedValue.match(/\/(scan|message)\/([^/?]+)/);
+      if (urlMatch && urlMatch[2]) {
+        const urlTagName = decodeURIComponent(urlMatch[2]).toLowerCase();
+        tag = family.tags.find(t => t.name?.toLowerCase() === urlTagName);
+      } else {
+        tag = family.tags.find(t => t.name?.toLowerCase() === normalizedValue.toLowerCase());
+      }
+    }
 
     if (!tag) {
       setError('Tag not found. Make sure this tag has been added by a parent.');
@@ -50,12 +67,22 @@ export function OpenScanModal({ onClose }: OpenScanModalProps) {
     );
 
     if (availableMissions.length === 0) {
-      const message = `Hi ${currentMember.nickname}! You found the ${tag.name}, but there's no mission here for you right now.`;
+      let message = `Hi ${currentMember.nickname}! You found the ${tag.name}`;
+
+      if (tag.message) {
+        message += `!\n\n"${tag.message}"\n\nBut there's no mission here for you right now.`;
+      } else {
+        message += `, but there's no mission here for you right now.`;
+      }
+
       setGenieMessage(message);
       setShowGenieMessage(true);
 
       if (family.genieSettings?.voiceEnabled) {
-        speakGenie(message, family.genieSettings);
+        const spokenMessage = tag.message
+          ? `Hi ${currentMember.nickname}! You found the ${tag.name}! ${tag.message}. But there's no mission here for you right now.`
+          : message;
+        speakGenie(spokenMessage, family.genieSettings);
       }
 
       setTimeout(() => {
@@ -66,13 +93,14 @@ export function OpenScanModal({ onClose }: OpenScanModalProps) {
     }
 
     if (availableMissions.length > 1) {
-      const missionsList = availableMissions.map((m, i) => `${i + 1}. ${m.taskName}`).join('\n');
-      const message = `Hi ${currentMember.nickname}! You found the ${tag.name}! You have ${availableMissions.length} missions here:\n\n${missionsList}\n\nLet's start with the first one!`;
+      const firstMission = availableMissions[0];
+      const clueText = firstMission.parentMessage || firstMission.taskName;
+      const message = `Hi ${currentMember.nickname}! You found the ${tag.name}! You have ${availableMissions.length} missions here.\n\nHere's your first clue:\n"${clueText}"`;
       setGenieMessage(message);
       setShowGenieMessage(true);
 
       if (family.genieSettings?.voiceEnabled) {
-        const spokenMessage = `Hi ${currentMember.nickname}! You found the ${tag.name}! You have ${availableMissions.length} missions here. Let's start with the first one!`;
+        const spokenMessage = `Hi ${currentMember.nickname}! You found the ${tag.name}! You have ${availableMissions.length} missions here. Here's your first clue: ${clueText}`;
         speakGenie(spokenMessage, family.genieSettings);
       }
 
@@ -82,14 +110,28 @@ export function OpenScanModal({ onClose }: OpenScanModalProps) {
         setFoundMission(mission);
         setShowMissionComplete(true);
         setError('');
-      }, 3500);
+      }, 4500);
       return;
     }
 
     const mission = availableMissions[0];
-    setFoundMission(mission);
-    setShowMissionComplete(true);
-    setError('');
+    const clueText = mission.parentMessage || mission.taskName;
+
+    const message = `Hi ${currentMember.nickname}! You found the ${tag.name}!\n\n"${clueText}"`;
+    setGenieMessage(message);
+    setShowGenieMessage(true);
+
+    if (family.genieSettings?.voiceEnabled) {
+      const spokenMessage = `Hi ${currentMember.nickname}! You found the ${tag.name}! ${clueText}`;
+      speakGenie(spokenMessage, family.genieSettings);
+    }
+
+    setTimeout(() => {
+      setShowGenieMessage(false);
+      setFoundMission(mission);
+      setShowMissionComplete(true);
+      setError('');
+    }, 4500);
   };
 
   const handleSubmit = (e: React.FormEvent) => {

@@ -31,10 +31,11 @@ export function AddTag() {
 
   const handleGenerateQR = () => {
     const tagID = `TAG_${Date.now()}`;
+    const tagUrl = `https://fungame.netlify.app/message/${encodeURIComponent(tagName.trim().toLowerCase())}`;
     const newTag: Tag = {
       id: crypto.randomUUID(),
       uid: tagID,
-      qrCode: tagID,
+      qrCode: tagUrl,
       name: tagName.trim(),
     };
 
@@ -56,15 +57,16 @@ export function AddTag() {
 
       const ndef = new (window as any).NDEFReader();
       const tagID = `TAG_${Date.now()}`;
+      const tagUrl = `https://fungame.netlify.app/message/${encodeURIComponent(tagName.trim().toLowerCase())}`;
 
       await ndef.write({
-        records: [{ recordType: 'text', data: tagID }]
+        records: [{ recordType: 'url', data: tagUrl }]
       });
 
       const newTag: Tag = {
         id: crypto.randomUUID(),
         uid: tagID,
-        qrCode: tagID,
+        qrCode: tagUrl,
         name: tagName.trim(),
       };
 
