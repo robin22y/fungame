@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { ShoppingCart, Package, Check, Lock } from 'lucide-react';
 import { useApp } from '../context/AppContext';
+import { getCardThemeClasses, getTextThemeClasses, getAccentThemeClasses } from '../utils/themeManager';
 
 export function GameStore() {
-  const { family, availableGames, purchaseGame } = useApp();
+  const { family, availableGames, purchaseGame, appTheme } = useApp();
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [showPurchaseModal, setShowPurchaseModal] = useState(false);
   const [selectedGame, setSelectedGame] = useState<string | null>(null);
@@ -35,21 +36,25 @@ export function GameStore() {
 
   const game = selectedGame ? availableGames.find((g) => g.id === selectedGame) : null;
 
+  const cardClasses = getCardThemeClasses(appTheme);
+  const textClasses = getTextThemeClasses(appTheme);
+  const accentClasses = getAccentThemeClasses(appTheme);
+
   return (
     <div className="max-w-6xl mx-auto">
-      <div className="bg-gradient-to-r from-blue-500 to-purple-600 rounded-3xl shadow-xl p-8 mb-6">
-        <div className="flex items-center justify-between text-white">
+      <div className={`${cardClasses} rounded-3xl shadow-xl p-8 mb-6 border-2`}>
+        <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-3xl font-bold mb-2">Game Store</h2>
-            <p className="text-blue-100">Discover amazing games for your family</p>
+            <h2 className={`text-3xl font-bold mb-2 ${textClasses}`}>Game Store</h2>
+            <p className={`${textClasses} opacity-80`}>Discover amazing games for your family</p>
           </div>
-          <ShoppingCart className="w-16 h-16 opacity-80" />
+          <ShoppingCart className={`w-16 h-16 ${accentClasses}`} />
         </div>
       </div>
 
-      <div className="bg-white rounded-3xl shadow-xl p-8 mb-6">
+      <div className={`${cardClasses} rounded-3xl shadow-xl p-8 mb-6 border-2`}>
         <div className="mb-6">
-          <h3 className="text-lg font-bold text-gray-800 mb-3">Categories</h3>
+          <h3 className={`text-lg font-bold ${textClasses} mb-3`}>Categories</h3>
           <div className="flex flex-wrap gap-2">
             {categories.map((cat) => (
               <button

@@ -1,3 +1,74 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  /* Ensure all input and textarea text is black */
+  input,
+  textarea,
+  select {
+    @apply text-black;
+  }
+
+  /* Ensure placeholder text is visible but lighter */
+  input::placeholder,
+  textarea::placeholder {
+    @apply text-gray-500;
+  }
+
+  /* Ensure labels are black */
+  label {
+    @apply text-black;
+  }
+}
+
+/* Print Styles for QR Code Sheets */
+@media print {
+  body {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    color-adjust: exact;
+    background: white !important;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* Hide all navigation and UI elements */
+  nav,
+  header,
+  footer,
+  .bottom-nav,
+  .no-print {
+    display: none !important;
+  }
+
+  /* Only show print content */
+  .print-content {
+    display: block !important;
+    padding: 0.5cm !important;
+    margin: 0 !important;
+  }
+
+  /* Optimize QR grid for printing */
+  .print-content .grid {
+    gap: 0.4cm !important;
+  }
+
+  /* Page break control */
+  @page {
+    size: A4 portrait;
+    margin: 1cm;
+  }
+
+  /* Prevent page breaks inside QR boxes */
+  .print-content > * {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  /* Ensure QR codes are crisp */
+  canvas {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+  }
+}

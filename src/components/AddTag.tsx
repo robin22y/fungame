@@ -3,9 +3,10 @@ import { QRCodeSVG } from 'qrcode.react';
 import { Nfc, QrCode } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { Tag } from '../types';
+import { getCardThemeClasses, getTextThemeClasses } from '../utils/themeManager';
 
 export function AddTag() {
-  const { addTag } = useApp();
+  const { addTag, appTheme } = useApp();
   const [tagName, setTagName] = useState('');
   const [generatedTag, setGeneratedTag] = useState<Tag | null>(null);
   const [step, setStep] = useState<'choose' | 'name' | 'write' | 'done'>('choose');
@@ -91,18 +92,21 @@ export function AddTag() {
     setNfcError('');
   };
 
+  const cardClasses = getCardThemeClasses(appTheme);
+  const textClasses = getTextThemeClasses(appTheme);
+
   return (
     <div className="max-w-2xl mx-auto">
-      <div className="bg-white rounded-3xl shadow-xl p-8">
+      <div className={`${cardClasses} rounded-3xl shadow-xl p-8 border-2`}>
         <div className="text-center mb-8">
           <div className="text-5xl mb-3">🏷️</div>
-          <h2 className="text-3xl font-bold text-gray-800 mb-2">Create Tag</h2>
-          <p className="text-gray-600">Simple step-by-step process</p>
+          <h2 className={`text-3xl font-bold ${textClasses} mb-2`}>Create Tag</h2>
+          <p className={`${textClasses} opacity-80`}>Simple step-by-step process</p>
         </div>
 
         {step === 'choose' && (
           <div className="space-y-6">
-            <h3 className="text-xl font-bold text-gray-800 text-center mb-6">
+            <h3 className={`text-xl font-bold ${textClasses} text-center mb-6`}>
               Choose Tag Type
             </h3>
             <div className="grid grid-cols-2 gap-4">

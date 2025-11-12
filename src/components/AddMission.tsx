@@ -19,6 +19,7 @@ export function AddMission() {
   const [success, setSuccess] = useState('');
   const [useMultiCheckpoints, setUseMultiCheckpoints] = useState(false);
   const [checkpoints, setCheckpoints] = useState<string[]>([]);
+  const [parentMessage, setParentMessage] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -48,6 +49,7 @@ export function AddMission() {
       completed: false,
       checkpoints: missionCheckpoints,
       currentCheckpoint: useMultiCheckpoints && checkpoints.length > 0 ? 0 : undefined,
+      parentMessage: parentMessage.trim() || undefined,
     };
 
     if (hasPokerOffer && pokerCondition.trim()) {
@@ -246,6 +248,19 @@ export function AddMission() {
                 required
               />
             </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Parent Message (Optional - Genie will read this)
+            </label>
+            <textarea
+              value={parentMessage}
+              onChange={(e) => setParentMessage(e.target.value)}
+              className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:outline-none resize-none"
+              rows={2}
+              placeholder="e.g., Great job! I'm so proud of you!"
+            />
           </div>
 
           <div>

@@ -2,27 +2,34 @@ import React from 'react';
 import { Award } from 'lucide-react';
 import { AVAILABLE_BADGES, getBadgeDetails } from '../utils/badgeSystem';
 import { Member } from '../types';
+import { useApp } from '../context/AppContext';
+import { getCardThemeClasses, getTextThemeClasses, getAccentThemeClasses } from '../utils/themeManager';
 
 interface BadgeDisplayProps {
   member: Member;
 }
 
 export function BadgeDisplay({ member }: BadgeDisplayProps) {
+  const { appTheme } = useApp();
   const earnedBadges = (member.badges || []).map(badgeId => getBadgeDetails(badgeId)).filter(Boolean);
   const unearnedBadges = AVAILABLE_BADGES.filter(
     badge => !member.badges?.includes(badge.id)
   );
 
+  const cardClasses = getCardThemeClasses(appTheme);
+  const textClasses = getTextThemeClasses(appTheme);
+  const accentClasses = getAccentThemeClasses(appTheme);
+
   return (
-    <div className="bg-white rounded-3xl shadow-xl p-8">
+    <div className={`${cardClasses} rounded-3xl shadow-xl p-8 border-2`}>
       <div className="flex items-center gap-2 mb-6">
-        <Award className="w-8 h-8 text-yellow-600" />
-        <h2 className="text-3xl font-bold text-gray-800">Badges</h2>
+        <Award className={`w-8 h-8 ${accentClasses}`} />
+        <h2 className={`text-3xl font-bold ${textClasses}`}>Badges</h2>
       </div>
 
       {earnedBadges.length > 0 && (
         <div className="mb-8">
-          <h3 className="text-xl font-bold text-gray-800 mb-4">Earned Badges</h3>
+          <h3 className={`text-xl font-bold ${textClasses} mb-4`}>Earned Badges</h3>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             {earnedBadges.map((badge) => (
               <div

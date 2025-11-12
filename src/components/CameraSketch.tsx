@@ -1,7 +1,10 @@
 import React, { useState, useRef } from 'react';
 import { Camera, X, Download } from 'lucide-react';
+import { useApp } from '../context/AppContext';
+import { getCardThemeClasses, getTextThemeClasses } from '../utils/themeManager';
 
 export function CameraSketch() {
+  const { appTheme } = useApp();
   const [originalImage, setOriginalImage] = useState<string | null>(null);
   const [sketchImage, setSketchImage] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -129,13 +132,16 @@ export function CameraSketch() {
     }
   };
 
+  const cardClasses = getCardThemeClasses(appTheme);
+  const textClasses = getTextThemeClasses(appTheme);
+
   return (
     <div className="max-w-4xl mx-auto">
-      <div className="bg-white rounded-3xl shadow-xl p-8">
+      <div className={`${cardClasses} rounded-3xl shadow-xl p-8 border-2`}>
         <div className="text-center mb-6">
-          <Camera className="w-16 h-16 text-blue-600 mx-auto mb-3" />
-          <h2 className="text-3xl font-bold text-gray-800 mb-2">Sketch Camera</h2>
-          <p className="text-gray-600">Turn your photos into pencil sketches</p>
+          <Camera className={`w-16 h-16 ${appTheme === 'dark' || appTheme === 'royal' ? 'text-blue-400' : 'text-blue-600'} mx-auto mb-3`} />
+          <h2 className={`text-3xl font-bold ${textClasses} mb-2`}>Sketch Camera</h2>
+          <p className={`${textClasses} opacity-80`}>Turn your photos into pencil sketches</p>
         </div>
 
         <canvas ref={canvasRef} className="hidden" />

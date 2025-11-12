@@ -4,6 +4,8 @@ import { useApp } from '../context/AppContext';
 
 export function LoginPage({ onNext }: { onNext: () => void }) {
   const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
   const { createFamily, family } = useApp();
 
   const handleClearData = () => {
@@ -15,8 +17,14 @@ export function LoginPage({ onNext }: { onNext: () => void }) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (email.trim()) {
-      createFamily(email.trim());
+    setError('');
+
+    if (email.trim() && password.trim()) {
+      if (password.length < 4) {
+        setError('Password must be at least 4 characters');
+        return;
+      }
+      createFamily(email.trim(), password);
       onNext();
     }
   };
@@ -29,6 +37,12 @@ export function LoginPage({ onNext }: { onNext: () => void }) {
           <h1 className="text-3xl font-bold text-gray-800 mb-2">Family Task Game</h1>
           <p className="text-gray-600">Turn chores into adventures!</p>
         </div>
+
+        {error && (
+          <div className="mb-4 bg-red-50 border-2 border-red-200 text-red-700 px-4 py-3 rounded-xl text-center font-semibold">
+            {error}
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
@@ -44,6 +58,23 @@ export function LoginPage({ onNext }: { onNext: () => void }) {
               placeholder="parent@family.com"
               required
             />
+          </div>
+
+          <div>
+            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+              Parent Password
+            </label>
+            <input
+              type="password"
+              id="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:outline-none transition-colors"
+              placeholder="Enter a secure password"
+              required
+              minLength={4}
+            />
+            <p className="text-xs text-gray-500 mt-1">At least 4 characters</p>
           </div>
 
           <button

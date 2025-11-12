@@ -72,11 +72,6 @@ export function SuperAdminLogin({ onSuccess }: { onSuccess: () => void }) {
           </button>
         </form>
 
-        <div className="mt-6 text-center">
-          <p className="text-xs text-gray-400">
-            Default password: tappyadmin123
-          </p>
-        </div>
       </div>
     </div>
   );

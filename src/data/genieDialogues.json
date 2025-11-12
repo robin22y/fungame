@@ -1,0 +1,213 @@
+{
+  "funny": {
+    "brushing_teeth": [
+      "The cavity monsters are awake — attack with your brush, hero!",
+      "Brush till your smile blinds your enemies!",
+      "Your teeth called — they want their sparkle back!",
+      "Time to show those germs who's boss, {{name}}!"
+    ],
+    "washing_machine": [
+      "Load up the laundry cannon, Captain Clean!",
+      "Clothes are begging for a spa day, {{name}}!",
+      "Transform that pile into fresh magic!"
+    ],
+    "shower": [
+      "Time to wash away the day's adventures!",
+      "Get squeaky clean, superhero {{name}}!",
+      "The soap is calling your name!"
+    ],
+    "arranging": [
+      "Turn this chaos into organized awesomeness!",
+      "Channel your inner neat freak, {{name}}!",
+      "Everything deserves its own special spot!"
+    ],
+    "tidying": [
+      "Let's make this place shine like a diamond!",
+      "Tidy up and level up, {{name}}!",
+      "A clean space is a happy space!"
+    ],
+    "watering_plants": [
+      "Your green friends are thirsty, {{name}}!",
+      "Time to make those plants do a happy dance!",
+      "Water them like they're mini forests!"
+    ],
+    "general": [
+      "You've got this, {{name}}!",
+      "Let's make magic happen!",
+      "Mission mode: ACTIVATED!",
+      "Show this task who's the champion!",
+      "Ready, set, GO {{name}}!"
+    ],
+    "welcome": [
+      "Hey superstar! Ready to rock these missions?",
+      "What's up, champion? Let's have some fun today!",
+      "Mission time! Let's make today awesome!",
+      "Hello there! Ready to crush some tasks?"
+    ],
+    "photo_prompts": [
+      "Say 'Genie Cheese!' and show your cleanest corner!",
+      "Show me your best victory pose next to your work!",
+      "Take a photo so Genie can brag about you!",
+      "Smile with your plants like they're your green squad!",
+      "Proof of clean-up please — Genie needs evidence!",
+      "Strike a superhero pose with your finished mission!",
+      "Show me that sparkle, {{name}}!"
+    ]
+  },
+  "encouraging": {
+    "brushing_teeth": [
+      "Every champion starts with a brilliant smile, {{name}}!",
+      "Your future self will thank you for this!",
+      "Build that healthy habit, one brush at a time!"
+    ],
+    "washing_machine": [
+      "Small efforts lead to big results, {{name}}!",
+      "You're building responsible habits today!",
+      "Every load counts towards your success!"
+    ],
+    "shower": [
+      "Self-care is success care, {{name}}!",
+      "You deserve to feel fresh and ready!",
+      "Take care of yourself like the star you are!"
+    ],
+    "arranging": [
+      "Organization is the foundation of achievement!",
+      "You're creating your success environment, {{name}}!",
+      "Every item in its place, every goal in reach!"
+    ],
+    "tidying": [
+      "A tidy space creates a focused mind!",
+      "You're investing in your best self, {{name}}!",
+      "Small actions, BIG impact!"
+    ],
+    "watering_plants": [
+      "You're nurturing life and growth, {{name}}!",
+      "Caring for others starts with caring for living things!",
+      "Your responsibility is showing!"
+    ],
+    "general": [
+      "You're capable of amazing things, {{name}}!",
+      "This is your moment to shine!",
+      "Every step forward is progress!",
+      "Believe in yourself — I believe in you!",
+      "You're building something great here!"
+    ],
+    "welcome": [
+      "Welcome back! You're going to do amazing things today!",
+      "Great to see you! Your potential is limitless!",
+      "Hello champion! Today is full of opportunities!",
+      "Ready to shine? I believe in you!"
+    ],
+    "photo_prompts": [
+      "Capture this proud moment, {{name}}!",
+      "Document your growth — take that victory shot!",
+      "Show the world what dedication looks like!",
+      "This photo will remind you of your strength!",
+      "Smile and celebrate your achievement!"
+    ]
+  },
+  "wise": {
+    "brushing_teeth": [
+      "Take a peaceful moment for your smile, {{name}}.",
+      "Gentle circles, peaceful mind.",
+      "Breathe and brush, you're doing great."
+    ],
+    "washing_machine": [
+      "One calm step at a time, {{name}}.",
+      "Let the rhythm of the washing soothe you.",
+      "Peaceful tasks bring peaceful minds."
+    ],
+    "shower": [
+      "Enjoy this refreshing moment, {{name}}.",
+      "Let the water wash your worries away.",
+      "Take your time, be present."
+    ],
+    "arranging": [
+      "Find your flow as you organize, {{name}}.",
+      "Each item finds its peaceful place.",
+      "Slow and steady brings harmony."
+    ],
+    "tidying": [
+      "Clear space, clear mind, {{name}}.",
+      "Find peace in these simple movements.",
+      "Mindful tidying brings tranquility."
+    ],
+    "watering_plants": [
+      "Connect with nature's calm, {{name}}.",
+      "Give life, receive peace.",
+      "Watch them grow, feel yourself grow too."
+    ],
+    "general": [
+      "You're exactly where you need to be, {{name}}.",
+      "Take a deep breath, you've got this.",
+      "One peaceful step at a time.",
+      "Trust the process, trust yourself.",
+      "Be present in this moment."
+    ],
+    "welcome": [
+      "Welcome. Take a breath. Today is yours.",
+      "Peace to you. Let's approach today with calm.",
+      "Greetings. May today bring you tranquility.",
+      "Hello. Trust in your journey today."
+    ],
+    "photo_prompts": [
+      "Capture this serene moment, {{name}}.",
+      "Take a photo in gratitude.",
+      "Document this peaceful achievement.",
+      "A gentle smile for your accomplishment.",
+      "Preserve this moment of completion."
+    ]
+  },
+  "excited": {
+    "brushing_teeth": [
+      "🎉 Sparkle time for your party smile, {{name}}!",
+      "✨ Get those teeth celebration-ready!",
+      "🎊 Your smile is the main event!"
+    ],
+    "washing_machine": [
+      "🎪 Welcome to the Laundry Festival!",
+      "🎭 Time for the Clean Clothes Spectacular!",
+      "🎨 Transform laundry into a celebration!"
+    ],
+    "shower": [
+      "🚿 The Freshness Festival begins now!",
+      "💦 Splish-splash celebration time!",
+      "🌟 Get ready to sparkle, {{name}}!"
+    ],
+    "arranging": [
+      "🎯 The Great Organization Festival!",
+      "🎪 Step right up to the Tidying Show!",
+      "✨ Let's make this space festive-ready!"
+    ],
+    "tidying": [
+      "🎉 Clean-up celebration in progress!",
+      "🌟 The Sparkle Festival starts here!",
+      "🎊 Party-worthy tidying time!"
+    ],
+    "watering_plants": [
+      "🌱 Welcome to the Garden Gala!",
+      "🌸 Plant Party is happening NOW!",
+      "🎉 Give your green friends festival vibes!"
+    ],
+    "general": [
+      "🎉 Let's celebrate this mission!",
+      "✨ You're the star of this show, {{name}}!",
+      "🎊 Festival mode: ACTIVATED!",
+      "🌟 Shine bright, celebration warrior!",
+      "🎪 Your moment in the spotlight!"
+    ],
+    "welcome": [
+      "🎉 WOW! You're here! It's party time!",
+      "✨ YAAAAY! Let's make today AMAZING!",
+      "🎊 WOOHOO! Ready for an EPIC day?!",
+      "🌟 HEY! Let's GO GO GO today!"
+    ],
+    "photo_prompts": [
+      "🎉 Strike a festival pose!",
+      "✨ Capture your celebration moment!",
+      "🎊 Photo time - you did it!",
+      "🌟 Smile big for the camera!",
+      "🎭 Show off that accomplished glow!"
+    ]
+  }
+}

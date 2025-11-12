@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Wallet, TrendingUp, DollarSign, History } from 'lucide-react';
 import { useApp } from '../context/AppContext';
+import { getCardThemeClasses, getTextThemeClasses, getAccentThemeClasses } from '../utils/themeManager';
 
 interface Transaction {
   id: string;
@@ -11,7 +12,7 @@ interface Transaction {
 }
 
 export function WalletPage() {
-  const { family, currentMember } = useApp();
+  const { family, currentMember, appTheme } = useApp();
   const [transactions, setTransactions] = useState<Transaction[]>(() => {
     const stored = localStorage.getItem('wallet_transactions');
     return stored ? JSON.parse(stored) : [];
@@ -42,13 +43,17 @@ export function WalletPage() {
 
   const memberTransactions = transactions.filter(t => t.memberId === currentMember.id);
 
+  const cardClasses = getCardThemeClasses(appTheme);
+  const textClasses = getTextThemeClasses(appTheme);
+  const accentClasses = getAccentThemeClasses(appTheme);
+
   return (
     <div className="max-w-4xl mx-auto">
-      <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-3xl shadow-xl p-8 mb-6 border-2 border-green-200">
+      <div className={`${cardClasses} rounded-3xl shadow-xl p-8 mb-6 border-2`}>
         <div className="text-center mb-6">
-          <Wallet className="w-16 h-16 text-green-600 mx-auto mb-3" />
-          <h2 className="text-3xl font-bold text-gray-800 mb-2">Pocket Money Wallet</h2>
-          <p className="text-gray-600">Convert your XP into coins</p>
+          <Wallet className={`w-16 h-16 ${accentClasses} mx-auto mb-3`} />
+          <h2 className={`text-3xl font-bold ${textClasses} mb-2`}>Pocket Money Wallet</h2>
+          <p className={`${textClasses} opacity-80`}>Convert your XP into coins</p>
         </div>
 
         <div className="bg-white rounded-2xl p-8 mb-6 border-2 border-green-300 text-center">

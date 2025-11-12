@@ -3,9 +3,10 @@ import { Users, UserPlus, Trash2 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { validatePin } from '../utils/helpers';
 import { Member } from '../types';
+import { speakGenie } from '../utils/speakGenie';
 
 export function MemberSetup({ onComplete }: { onComplete: () => void }) {
-  const { updateMembers } = useApp();
+  const { updateMembers, family } = useApp();
   const [step, setStep] = useState<'parents' | 'count' | 'details'>('parents');
   const [parentCount, setParentCount] = useState('2');
   const [kidCount, setKidCount] = useState('2');
@@ -27,6 +28,7 @@ export function MemberSetup({ onComplete }: { onComplete: () => void }) {
         id: crypto.randomUUID(),
         nickname: count === 1 ? 'Parent' : i === 1 ? 'Parent1' : 'Parent2',
         pin: '',
+        role: 'parent',
         totalXp: 0,
         xpToday: 0,
         totalCash: 0,
@@ -52,6 +54,7 @@ export function MemberSetup({ onComplete }: { onComplete: () => void }) {
         id: crypto.randomUUID(),
         nickname: `Kid${i}`,
         pin: '',
+        role: 'kid',
         totalXp: 0,
         xpToday: 0,
         totalCash: 0,
@@ -69,6 +72,7 @@ export function MemberSetup({ onComplete }: { onComplete: () => void }) {
       id: crypto.randomUUID(),
       nickname: '',
       pin: '',
+      role: 'parent',
       totalXp: 0,
       xpToday: 0,
       totalCash: 0,
@@ -88,6 +92,16 @@ export function MemberSetup({ onComplete }: { onComplete: () => void }) {
       setKids(kids.map(m => m.id === id ? { ...m, nickname } : m));
     } else {
       setExtraMembers(extraMembers.map(m => m.id === id ? { ...m, nickname } : m));
+    }
+  };
+
+  const handleAvatarChange = (id: string, emoji: string, type: 'parent' | 'kid' | 'extra') => {
+    if (type === 'parent') {
+      setParents(parents.map(m => m.id === id ? { ...m, avatarEmoji: emoji } : m));
+    } else if (type === 'kid') {
+      setKids(kids.map(m => m.id === id ? { ...m, avatarEmoji: emoji } : m));
+    } else {
+      setExtraMembers(extraMembers.map(m => m.id === id ? { ...m, avatarEmoji: emoji } : m));
     }
   };
 
@@ -119,6 +133,12 @@ export function MemberSetup({ onComplete }: { onComplete: () => void }) {
     }
 
     updateMembers(allMembers);
+
+    const setupMessage = `Great job! Your family is all set up! Now let's add some fun missions and start earning rewards. I'll be here to guide you every step of the way!`;
+    if (family?.genieSettings?.voiceEnabled) {
+      speakGenie(setupMessage, family.genieSettings);
+    }
+
     onComplete();
   };
 
@@ -280,6 +300,27 @@ export function MemberSetup({ onComplete }: { onComplete: () => void }) {
                   {kids.map((kid, index) => (
                     <div key={kid.id} className="bg-blue-50 rounded-2xl p-5 border-2 border-blue-200">
                       <h4 className="text-sm font-semibold text-blue-600 mb-3">Kid {index + 1}</h4>
+                      <div className="mb-4">
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Avatar
+                        </label>
+                        <div className="flex gap-2 flex-wrap">
+                          {['🐶', '🐱', '🦊', '🐻', '🐼', '🦁', '🐸', '🐵', '🦉', '🦄', '🚀', '⭐', '🎮', '⚽', '🎨', '🎸'].map(emoji => (
+                            <button
+                              key={emoji}
+                              type="button"
+                              onClick={() => handleAvatarChange(kid.id, emoji, 'kid')}
+                              className={`text-3xl p-2 rounded-xl transition-all ${
+                                kid.avatarEmoji === emoji
+                                  ? 'bg-blue-200 scale-110 border-2 border-blue-500'
+                                  : 'bg-white hover:bg-blue-100'
+                              }`}
+                            >
+                              {emoji}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-2">

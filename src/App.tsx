@@ -12,15 +12,27 @@ import { SuperAdminLogin } from './components/SuperAdminLogin';
 import { SuperAdminPanel } from './components/SuperAdminPanel';
 import { BottomNav } from './components/BottomNav';
 import { ViewAllTags } from './components/ViewAllTags';
+import { WalletPage } from './components/WalletPage';
+import { BadgeDisplay } from './components/BadgeDisplay';
+import { OpenScanModal } from './components/OpenScanModal';
+import { ThemeSelector } from './components/ThemeSelector';
+import { FamilyGamesPage } from './components/FamilyGamesPage';
+import { MemberManagement } from './components/MemberManagement';
+import { getAppThemeClasses, getCardThemeClasses, getTextThemeClasses } from './utils/themeManager';
 
 type AppStep = 'login' | 'setup' | 'member-login' | 'main' | 'super-admin-login' | 'super-admin';
-type MainTab = 'dashboard' | 'missions' | 'add' | 'store';
+type MainTab = 'dashboard' | 'missions' | 'add' | 'wallet' | 'badges' | 'camera' | 'theme';
 
 function AppContent() {
-  const { family, currentMember, isParent, isSuperAdmin, logout } = useApp();
+  const { family, currentMember, isParent, isSuperAdmin, logout, appTheme, updateGenieSettings } = useApp();
   const [step, setStep] = useState<AppStep>('login');
   const [activeTab, setActiveTab] = useState<MainTab>('dashboard');
-  const [addTab, setAddTab] = useState<'tag' | 'mission' | 'view'>('tag');
+  const [addTab, setAddTab] = useState<'tag' | 'mission' | 'view' | 'members'>('tag');
+  const [showOpenScan, setShowOpenScan] = useState(false);
+
+  const themeClasses = getAppThemeClasses(appTheme);
+  const cardClasses = getCardThemeClasses(appTheme);
+  const textClasses = getTextThemeClasses(appTheme);
 
   if (step === 'super-admin-login') {
     return <SuperAdminLogin onSuccess={() => setStep('super-admin')} />;
@@ -76,53 +88,97 @@ function AppContent() {
     setActiveTab('dashboard');
   };
 
+  const handleTabChange = (tab: MainTab) => {
+    if (tab === 'camera') {
+      setShowOpenScan(true);
+    } else {
+      setActiveTab(tab);
+    }
+  };
+
+  const handleToggleVoice = () => {
+    if (family) {
+      const currentSettings = family.genieSettings || {
+        voiceEnabled: true,
+        pitch: 1,
+        rate: 1,
+        mood: 'funny' as const,
+        currentGenieId: 'genie_default',
+      };
+      updateGenieSettings({
+        ...currentSettings,
+        voiceEnabled: !currentSettings.voiceEnabled,
+      });
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 pb-24">
+    <div className={`min-h-screen transition-colors duration-500 pb-24 ${themeClasses}`}>
       <div className="container mx-auto px-4 py-8">
         {isParent ? (
           <>
             {activeTab === 'dashboard' && <FamilyDashboard />}
             {activeTab === 'missions' && <FamilyDashboard />}
-            {activeTab === 'store' && <GameStore />}
+            {activeTab === 'theme' && <ThemeSelector />}
             {activeTab === 'add' && (
               <div className="max-w-2xl mx-auto">
-                <div className="bg-white rounded-3xl shadow-xl p-6 mb-6">
-                  <div className="grid grid-cols-3 gap-2">
+                <div className={`${cardClasses} rounded-3xl shadow-xl p-6 mb-6 border-2`}>
+                  <h2 className={`text-2xl font-bold ${textClasses} mb-4 text-center`}>Parent Controls</h2>
+                  <div className="grid grid-cols-4 gap-2">
                     <button
                       onClick={() => setAddTab('tag')}
-                      className={`py-3 rounded-xl font-semibold transition-all ${
+                      className={`py-3 px-2 rounded-xl font-semibold transition-all border-2 ${
                         addTab === 'tag'
-                          ? 'bg-blue-500 text-white'
-                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                          ? 'bg-blue-500 text-white border-blue-600 shadow-lg scale-105'
+                          : appTheme === 'dark' || appTheme === 'royal'
+                          ? 'bg-gray-700 text-white hover:bg-gray-600 border-gray-600'
+                          : 'bg-white text-gray-800 hover:bg-gray-50 border-gray-300'
                       }`}
                     >
-                      Add Tag
+                      🏷️ Add Tag
                     </button>
                     <button
                       onClick={() => setAddTab('view')}
-                      className={`py-3 rounded-xl font-semibold transition-all ${
+                      className={`py-3 px-2 rounded-xl font-semibold transition-all border-2 ${
                         addTab === 'view'
-                          ? 'bg-blue-500 text-white'
-                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                          ? 'bg-blue-500 text-white border-blue-600 shadow-lg scale-105'
+                          : appTheme === 'dark' || appTheme === 'royal'
+                          ? 'bg-gray-700 text-white hover:bg-gray-600 border-gray-600'
+                          : 'bg-white text-gray-800 hover:bg-gray-50 border-gray-300'
                       }`}
                     >
-                      View Tags
+                      👁️ View Tags
                     </button>
                     <button
                       onClick={() => setAddTab('mission')}
-                      className={`py-3 rounded-xl font-semibold transition-all ${
+                      className={`py-3 px-2 rounded-xl font-semibold transition-all border-2 ${
                         addTab === 'mission'
-                          ? 'bg-blue-500 text-white'
-                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                          ? 'bg-blue-500 text-white border-blue-600 shadow-lg scale-105'
+                          : appTheme === 'dark' || appTheme === 'royal'
+                          ? 'bg-gray-700 text-white hover:bg-gray-600 border-gray-600'
+                          : 'bg-white text-gray-800 hover:bg-gray-50 border-gray-300'
                       }`}
                     >
-                      Add Mission
+                      🎯 Mission
+                    </button>
+                    <button
+                      onClick={() => setAddTab('members')}
+                      className={`py-3 px-2 rounded-xl font-semibold transition-all border-2 ${
+                        addTab === 'members'
+                          ? 'bg-blue-500 text-white border-blue-600 shadow-lg scale-105'
+                          : appTheme === 'dark' || appTheme === 'royal'
+                          ? 'bg-gray-700 text-white hover:bg-gray-600 border-gray-600'
+                          : 'bg-white text-gray-800 hover:bg-gray-50 border-gray-300'
+                      }`}
+                    >
+                      👥 Members
                     </button>
                   </div>
                 </div>
                 {addTab === 'tag' && <AddTag />}
                 {addTab === 'view' && <ViewAllTags />}
                 {addTab === 'mission' && <AddMission />}
+                {addTab === 'members' && <MemberManagement />}
               </div>
             )}
           </>
@@ -130,17 +186,27 @@ function AppContent() {
           <>
             {activeTab === 'dashboard' && <KidView />}
             {activeTab === 'missions' && <KidView />}
-            {activeTab === 'store' && <GameStore />}
+            {activeTab === 'wallet' && <WalletPage />}
+            {activeTab === 'badges' && currentMember && <BadgeDisplay member={currentMember} />}
+            {activeTab === 'theme' && <ThemeSelector />}
             {activeTab === 'add' && <KidView />}
           </>
         )}
+
       </div>
 
       <BottomNav
         activeTab={activeTab}
-        onTabChange={setActiveTab}
+        onTabChange={handleTabChange}
         onLogout={handleLogout}
+        isParent={isParent}
+        voiceEnabled={family?.genieSettings?.voiceEnabled ?? true}
+        onToggleVoice={handleToggleVoice}
       />
+
+      {showOpenScan && !isParent && (
+        <OpenScanModal onClose={() => setShowOpenScan(false)} />
+      )}
     </div>
   );
 }

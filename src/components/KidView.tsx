@@ -1,22 +1,69 @@
-import React, { useState } from 'react';
-import { Trophy, Wallet, CheckCircle } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Trophy, Wallet, CheckCircle, Scan } from 'lucide-react';
 import Confetti from 'react-confetti';
 import { useApp } from '../context/AppContext';
 import { ScanModal } from './ScanModal';
+import { OpenScanModal } from './OpenScanModal';
 import { MissionCard } from './MissionCard';
 import { LevelProgressBar } from './LevelProgressBar';
+import { MysteryMissionDisplay } from './MysteryMissionDisplay';
+import { getMysteryMissionForToday, generateMysteryMission } from '../utils/mysteryMission';
+import { getTaskEmoji } from '../utils/taskEmoji';
+import { GeniePopup } from './GeniePopup';
+import { getGenieMessage } from '../utils/genieMessage';
+import { speakGenie } from '../utils/speakGenie';
 
 export function KidView() {
   const { family, currentMember, completeMission } = useApp();
   const [showScanModal, setShowScanModal] = useState(false);
   const [selectedMission, setSelectedMission] = useState<string | null>(null);
   const [showConfetti, setShowConfetti] = useState(false);
+  const [mysteryMission, setMysteryMission] = useState<any>(null);
+  const [showGenieGreeting, setShowGenieGreeting] = useState(false);
+  const [genieGreeting, setGenieGreeting] = useState('');
+  const [showOpenScan, setShowOpenScan] = useState(false);
 
   if (!family || !currentMember) return null;
 
   const myMissions = family.missions.filter(
-    m => m.assignedTo === currentMember.id && !m.completed
+    m => m.assignedTo === currentMember.id && !m.completed && !m.isMystery
   );
+
+  useEffect(() => {
+    if (family && currentMember) {
+      const existing = getMysteryMissionForToday(family.missions);
+      if (existing) {
+        setMysteryMission(existing);
+      } else {
+        const newMystery = generateMysteryMission(
+          family.missions.filter(m => m.assignedTo === currentMember.id)
+        );
+        if (newMystery) {
+          setMysteryMission(newMystery);
+        }
+      }
+
+      const lastGreeting = localStorage.getItem(`genie_greeting_${currentMember.id}`);
+      const today = new Date().toDateString();
+      const isFirstVisit = !lastGreeting;
+
+      if (lastGreeting !== today) {
+        let greeting = getGenieMessage('welcome', family.genieSettings?.mood || 'funny');
+
+        if (isFirstVisit) {
+          greeting = `Hello ${currentMember.nickname}! Welcome to your adventure! I'm your magical genie guide! Complete missions to earn rewards and unlock cool badges. Ready to become a super hero? Let's go!`;
+        }
+
+        setGenieGreeting(greeting);
+        setShowGenieGreeting(true);
+        localStorage.setItem(`genie_greeting_${currentMember.id}`, today);
+
+        if (family.genieSettings?.voiceEnabled) {
+          speakGenie(greeting, family.genieSettings);
+        }
+      }
+    }
+  }, [family, currentMember]);
 
   const [complimentMessage, setComplimentMessage] = useState<string | null>(null);
 
@@ -108,6 +155,22 @@ export function KidView() {
         </div>
       </div>
 
+      {mysteryMission && (
+        <MysteryMissionDisplay
+          mission={mysteryMission}
+          currency={family.currency}
+          onComplete={() => handleScanClick(mysteryMission.id)}
+        />
+      )}
+
+      <button
+        onClick={() => setShowOpenScan(true)}
+        className="w-full bg-gradient-to-r from-blue-500 to-purple-500 text-white py-6 rounded-3xl font-bold text-xl shadow-xl hover:from-blue-600 hover:to-purple-600 transition-all mb-6 flex items-center justify-center gap-3"
+      >
+        <Scan className="w-8 h-8" />
+        Scan Any Tag to Find Missions
+      </button>
+
       <div className="bg-white rounded-3xl shadow-xl p-8">
         <h3 className="text-2xl font-bold text-gray-800 mb-6">Your Missions</h3>
 
@@ -125,7 +188,7 @@ export function KidView() {
               return (
                 <MissionCard
                   key={mission.id}
-                  emoji={mission.emoji}
+                  emoji={getTaskEmoji(mission.category, mission.taskName)}
                   taskName={mission.taskName}
                   xp={mission.xp}
                   cash={mission.cash}
@@ -180,6 +243,18 @@ export function KidView() {
           onClose={() => setShowScanModal(false)}
           onComplete={handleScanComplete}
         />
+      )}
+
+      {showGenieGreeting && (
+        <GeniePopup
+          message={genieGreeting}
+          onClose={() => setShowGenieGreeting(false)}
+          duration={5000}
+        />
+      )}
+
+      {showOpenScan && (
+        <OpenScanModal onClose={() => setShowOpenScan(false)} />
       )}
     </div>
     </>
