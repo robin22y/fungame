@@ -3,6 +3,7 @@ import { QRCodeSVG, QRCodeCanvas } from 'qrcode.react';
 import { QrCode, Download } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { downloadQR } from '../utils/downloadQR';
+import { getTagUrl } from '../utils/constants';
 
 export function ViewAllTags() {
   const { family } = useApp();
@@ -28,7 +29,7 @@ export function ViewAllTags() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {family.tags.map((tag) => {
-            const tagUrl = `https://fungame.netlify.app/message/${encodeURIComponent((tag.name || tag.uid).toLowerCase())}`;
+            const tagUrl = getTagUrl(tag.uid);
 
             return (
               <div

@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Family, Member, Tag, Mission, Game, PurchasedGame, FamilyGame, PhotoProof, GenieSettings, GenieCharacter, GenieMessage, AppContextType } from '../types';
 import { generateFamilyName, getTodayString } from '../utils/helpers';
 import { checkAndAwardBadges } from '../utils/badgeSystem';
+import { migrateTagUrl } from '../utils/constants';
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
@@ -37,6 +38,15 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored) {
       const data = JSON.parse(stored);
+
+      if (data.tags && data.tags.length > 0) {
+        data.tags = data.tags.map((tag: Tag) => ({
+          ...tag,
+          qrCode: migrateTagUrl(tag.qrCode)
+        }));
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      }
+
       setFamily(data);
     }
 

@@ -20,6 +20,7 @@ import { ThemeSelector } from './components/ThemeSelector';
 import { FamilyGamesPage } from './components/FamilyGamesPage';
 import { MemberManagement } from './components/MemberManagement';
 import { MessageBoard } from './components/MessageBoard';
+import { TagDetailPage } from './components/TagDetailPage';
 import { getAppThemeClasses, getCardThemeClasses, getTextThemeClasses } from './utils/themeManager';
 import { stopGenieSpeech } from './utils/speakGenie';
 
@@ -253,6 +254,7 @@ function App() {
     <BrowserRouter>
       <AppProvider>
         <Routes>
+          <Route path="/tag/:tagId" element={<TagDetailPage />} />
           <Route path="/message/:tagName" element={<MessageBoard />} />
           <Route path="*" element={<AppContent />} />
         </Routes>

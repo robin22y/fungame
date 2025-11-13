@@ -40,10 +40,13 @@ export function OpenScanModal({ onClose, autoScanTag }: OpenScanModalProps) {
     );
 
     if (!tag) {
-      const urlMatch = normalizedValue.match(/\/(scan|message)\/([^/?]+)/);
+      const urlMatch = normalizedValue.match(/\/(scan|message|tag)\/([^/?]+)/);
       if (urlMatch && urlMatch[2]) {
-        const urlTagName = decodeURIComponent(urlMatch[2]).toLowerCase();
-        tag = family.tags.find(t => t.name?.toLowerCase() === urlTagName);
+        const urlPart = decodeURIComponent(urlMatch[2]);
+        tag = family.tags.find(t =>
+          t.uid === urlPart ||
+          t.name?.toLowerCase() === urlPart.toLowerCase()
+        );
       } else {
         tag = family.tags.find(t => t.name?.toLowerCase() === normalizedValue.toLowerCase());
       }

@@ -20,6 +20,7 @@ export interface Tag {
   name?: string;
   message?: string;
   nextTagId?: string;
+  nfcWritten?: boolean;
 }
 
 export interface PokerOffer {
